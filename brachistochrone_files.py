@@ -3,11 +3,28 @@ from scipy import optimize
 
 def get_optimal_cycloid(a,b):
     """ Compute parameters for cycloid between (0,0) and (a,b)"""
-    cycloid=lambda thm,r: [a-(r*(thm-np.sin(thm))),b-(-r*(1-np.cos(thm)))]
-    sol=optimize.root(lambda X: cycloid(X[0],X[1]),[np.pi-0.01,-2],options={'xtol':1e-8})
-
+    cycloid=lambda thm,r: np.array([a-(r*(thm-np.sin(thm))),b-(-r*(1-np.cos(thm)))])
+    
+    #sol=optimize.root(lambda X: cycloid(X[0],X[1]),[np.pi-0.01,1],options={'xtol':1e-8})
+#     guess=sol.x
+#     print(guess)
+#     guess[0]=np.array([guess[0],2*np.pi]).min()
+#     sol=optimize.minimize(lambda X: np.sum((cycloid(X[0],X[1]))**2),guess,options={'xtol':1e-8},bounds=[(0,2*np.pi),(0,np.inf)])
+    sse=lambda x: np.sum(cycloid(x[0],x[1])**2)
+    
+    sol=optimize.brute(sse,ranges=[(0,2*np.pi),(0,10)],Ns=20)
+    guess=sol
+    #print(guess)
+    sse_grad=lambda thm,r: np.array([2*(a-(r*(thm-np.sin(thm))))*(-r*(1-np.cos(thm)))+\
+                                     2*(b-(-r*(1-np.cos(thm))))*(-r*np.sin(thm)),\
+                                     2*(a-(r*(thm-np.sin(thm))))*(-(thm-np.sin(thm)))+\
+                                     2*(b-(-r*(1-np.cos(thm))))*(1-np.cos(thm))])
+    sse_grad2=lambda x: sse_grad(x[0],x[1])
+    sol=optimize.minimize(sse,x0=guess,jac=sse_grad2,method='SLSQP',bounds=[(0,2*np.pi),(0,np.inf)])
+    #print(sol)
     theta_end=sol.x[0]
     r=sol.x[1]
+    #print(theta_end,r)
     return theta_end,r
 
 def make_guess(a,b,N):
