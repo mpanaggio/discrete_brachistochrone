@@ -1,6 +1,20 @@
 import numpy as np
 from scipy import optimize
-
+def norm(x):
+    return np.sqrt(np.sum(x**2))
+def angles_with_previous(x,y):
+    vec_prev=np.array([x[1]-x[0],y[1]-y[0]])
+    vec_next=np.array([1,0])
+    vec_prev=vec_prev/norm(vec_prev)
+    vec_next=vec_next/norm(vec_next)
+    angles=[np.arccos(np.dot(vec_prev,vec_next))]
+    for k in range(1,len(x)-1):
+        vec_prev=np.array([x[k-1]-x[k],y[k-1]-y[k]])
+        vec_next=np.array([x[k+1]-x[k],y[k+1]-y[k]])
+        vec_prev=vec_prev/norm(vec_prev)
+        vec_next=vec_next/norm(vec_next)
+        angles.append(np.arccos(np.dot(vec_prev,vec_next)))
+    return angles
 def get_optimal_cycloid(a,b):
     """ Compute parameters for cycloid between (0,0) and (a,b)"""
     cycloid=lambda thm,r: np.array([a-(r*(thm-np.sin(thm))),b-(-r*(1-np.cos(thm)))])
