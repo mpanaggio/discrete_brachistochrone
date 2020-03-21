@@ -7,7 +7,7 @@ def angles_with_previous(x,y):
     vec_next=np.array([1,0])
     vec_prev=vec_prev/norm(vec_prev)
     vec_next=vec_next/norm(vec_next)
-    angles=[np.arccos(np.dot(vec_prev,vec_next))]
+    angles=[np.arccos(np.dot(vec_prev,vec_next))*180/np.pi]
     for k in range(1,len(x)-1):
         vec_prev=np.array([x[k-1]-x[k],y[k-1]-y[k]])
         vec_next=np.array([x[k+1]-x[k],y[k+1]-y[k]])
